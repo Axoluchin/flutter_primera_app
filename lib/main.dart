@@ -17,8 +17,7 @@ class MyApp extends StatelessWidget {
         title: 'Mi primera app by Axoluchin',
         theme: ThemeData(
           useMaterial3: true,
-          colorScheme: ColorScheme.fromSeed(
-              seedColor: Color.fromARGB(255, 139, 165, 248)),
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
         ),
         home: MyHomePage(),
       ),
@@ -27,17 +26,16 @@ class MyApp extends StatelessWidget {
 }
 
 class MyAppState extends ChangeNotifier {
-  var current = WordPair.random();
-  var liked = false;
+  var current = WordPair.random().asPascalCase;
+  List<String> likedMessage = [];
 
   void newWorld() {
-    current = WordPair.random();
-    liked = false;
+    current = WordPair.random().asPascalCase;
     notifyListeners();
   }
 
   void setLiked() {
-    liked = true;
+    likedMessage.add(current);
     notifyListeners();
   }
 }
@@ -49,7 +47,6 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   var selectedIndex = 0;
-  var openNav = false;
 
   @override
   Widget build(BuildContext context) {
@@ -59,55 +56,49 @@ class _MyHomePageState extends State<MyHomePage> {
         page = CurrenPage();
         break;
       case 1:
-        page = Placeholder();
+        page = FavoritePage();
         break;
       default:
         throw UnimplementedError('no widget for $selectedIndex');
     }
 
-    return Scaffold(
-      body: Row(
-        children: [
-          SafeArea(
-            child: NavigationRail(
-              leading: IconButton(
-                  icon: Icon(Icons.menu),
-                  onPressed: () {
-                    setState(() {
-                      openNav = !openNav;
-                    });
-                  },
-                  alignment: Alignment.centerLeft),
-              extended: openNav,
-              destinations: [
-                NavigationRailDestination(
-                  icon: Icon(Icons.home_outlined),
-                  selectedIcon: Icon(Icons.home),
-                  label: Text('Home'),
-                ),
-                NavigationRailDestination(
-                  icon: Icon(Icons.favorite_outline),
-                  selectedIcon: Icon(Icons.favorite),
-                  label: Text('Favorites'),
-                ),
-              ],
-              selectedIndex: selectedIndex,
-              onDestinationSelected: (value) {
-                setState(() {
-                  selectedIndex = value;
-                });
-              },
+    return LayoutBuilder(builder: (context, constraints) {
+      return Scaffold(
+        body: Row(
+          children: [
+            SafeArea(
+              child: NavigationRail(
+                extended: constraints.maxWidth >= 700,
+                destinations: [
+                  NavigationRailDestination(
+                    icon: Icon(Icons.home_outlined),
+                    selectedIcon: Icon(Icons.home),
+                    label: Text('Home'),
+                  ),
+                  NavigationRailDestination(
+                    icon: Icon(Icons.favorite_outline),
+                    selectedIcon: Icon(Icons.favorite),
+                    label: Text('Favorites'),
+                  ),
+                ],
+                selectedIndex: selectedIndex,
+                onDestinationSelected: (value) {
+                  setState(() {
+                    selectedIndex = value;
+                  });
+                },
+              ),
             ),
-          ),
-          Expanded(
-            child: Container(
-              color: Theme.of(context).colorScheme.primaryContainer,
-              child: page,
+            Expanded(
+              child: Container(
+                color: Theme.of(context).colorScheme.primaryContainer,
+                child: page,
+              ),
             ),
-          ),
-        ],
-      ),
-    );
+          ],
+        ),
+      );
+    });
   }
 }
 
@@ -133,14 +124,14 @@ class CartPair extends StatelessWidget {
     required this.appState,
   });
 
-  final WordPair wordPair;
+  final String wordPair;
   final MyAppState appState;
 
   @override
   Widget build(BuildContext context) {
     IconData icon;
 
-    if (appState.liked) {
+    if (appState.likedMessage.contains(wordPair)) {
       icon = Icons.favorite;
     } else {
       icon = Icons.favorite_outline;
@@ -153,7 +144,7 @@ class CartPair extends StatelessWidget {
           child: Column(
             children: [
               Text(
-                wordPair.asPascalCase,
+                wordPair,
                 style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
               ),
               Center(
@@ -179,6 +170,46 @@ class CartPair extends StatelessWidget {
               )
             ],
           )),
+    );
+  }
+}
+
+class FavoritePage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    var appState = context.watch<MyAppState>();
+    var listWords = appState.likedMessage;
+
+    return ListView(
+      children: [
+        Text(
+          "Favoritos",
+          style: TextStyle(
+              color: Colors.blue, fontSize: 32, fontWeight: FontWeight.bold),
+          textAlign: TextAlign.center,
+        ),
+        Text(
+          "Total: ${listWords.length}",
+          textAlign: TextAlign.center,
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+        for (var word in listWords)
+          Row(
+            children: [
+              IconButton(
+                onPressed: () {},
+                icon: Icon(
+                  Icons.favorite,
+                  color: Colors.blueAccent,
+                ),
+              ),
+              SizedBox(
+                width: 8,
+              ),
+              Text(word)
+            ],
+          ),
+      ],
     );
   }
 }
