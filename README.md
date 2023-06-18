@@ -1,16 +1,5 @@
 # flutter_primera_app
 
-A new Flutter project.
+Mi primera App de Flutter siguiendo el codelab de google
 
-## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+<img width="674" alt="Captura de pantalla 2023-06-18 a la(s) 15 10 07" src="https://github.com/Axoluchin/flutter_primera_app/assets/60200578/92a901fe-8d56-45d7-8928-43d49b1164bd">
